@@ -8,6 +8,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import app from "../firebase/firebase.config";
+import axios from "axios";
 
 export const AuthContext = createContext(null);
 
@@ -24,13 +25,13 @@ const AuthProvider = ({ children }) => {
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  // Sign In User (Login)
+  // Sign In User
   const signIn = (email, password) => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
 
-  // Sign Out User (Logout)
+  // Sign Out User
   const logOut = () => {
     setLoading(true);
     return signOut(auth);
@@ -46,9 +47,30 @@ const AuthProvider = ({ children }) => {
 
   // Observer - For Track Auth State Changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       console.log("Current User:", currentUser);
+
+      if (currentUser) {
+        // Get token from server and store in localStorage
+        try {
+          const response = await axios.post(
+            `${import.meta.env.VITE_API_URL}/jwt`,
+            { email: currentUser.email }
+          );
+
+          if (response.data.token) {
+            localStorage.setItem("access-token", response.data.token);
+          }
+        } catch (error) {
+          console.error("Error getting token:", error);
+        }
+      } else {
+        // Remove token if user is logged out
+        localStorage.removeItem("access-token");
+      }
+
+      console.log("Current User:", currentUser?.email || "No user");
       setLoading(false);
     });
 

@@ -36,7 +36,7 @@ export const districts = [
   { id: 34, name: "Pabna" },
   { id: 35, name: "Natore" },
   { id: 36, name: "Naogaon" },
-  { id: 37, name: "Chapai Nawabganj" },
+  { id: 37, name: "ChapaiNawabganj" },
   { id: 38, name: "Sirajganj" },
   { id: 39, name: "Joypurhat" },
   { id: 40, name: "Satkhira" },
@@ -250,7 +250,7 @@ export const upazilas = {
     "Naldanga",
   ],
   Joypurhat: ["Akkelpur", "Kalai", "Khetlal", "Panchbibi", "Joypurhat Sadar"],
-  Chapainawabganj: [
+  ChapaiNawabganj: [
     "Chapainawabganj Sadar",
     "Gomostapur",
     "Nachol",
