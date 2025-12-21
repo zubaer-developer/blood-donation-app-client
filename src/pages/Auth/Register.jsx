@@ -12,6 +12,7 @@ import { districts, upazilas, bloodGroups } from "../../utils/districts";
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${
   import.meta.env.VITE_IMAGEBB_API_KEY
 }`;
+console.log("API URL:", image_hosting_api);
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -61,6 +62,9 @@ const Register = () => {
       let avatarURL = "https://i.ibb.co/MgsTCcv/user.jpg"; // Default avatar
 
       if (data.avatar && data.avatar[0]) {
+        console.log("Uploading image to ImageBB...");
+        console.log("API Key exists:", !!import.meta.env.VITE_IMAGEBB_API_KEY);
+
         const imageFile = new FormData();
         imageFile.append("image", data.avatar[0]);
 
@@ -69,12 +73,17 @@ const Register = () => {
           body: imageFile,
         });
         const imageResult = await imageResponse.json();
+        console.log("ImageBB Response:", imageResult);
 
         if (imageResult.success) {
           avatarURL = imageResult.data.display_url;
+          console.log("Image uploaded successfully:", avatarURL);
         } else {
-          throw new Error("Image upload failed");
+          console.error("Image upload failed:", imageResult);
+          toast.error("Image upload failed. Using default avatar.");
         }
+      } else {
+        console.log("No image selected, using default avatar");
       }
 
       // Create user in Firebase
@@ -131,7 +140,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-gray-100 py-12 px-4">
+    <div className="min-h-screen bg-linear-to-br from-red-50 to-gray-100 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

@@ -1,11 +1,17 @@
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
-import { FaBars, FaTimes, FaUser } from "react-icons/fa";
+import { FaBars, FaTimes } from "react-icons/fa";
 import { MdBloodtype } from "react-icons/md";
+import useAuth from "../../hooks/useAuth";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const user = null;
+  const { user, logOut, loading } = useAuth();
+
+  console.log("User:", user);
+  console.log("PhotoURL:", user?.photoURL);
+  console.log("DisplayName:", user?.displayName);
 
   const navLinks = [
     { path: "/", label: "Home" },
@@ -13,9 +19,18 @@ const Navbar = () => {
     { path: "/search", label: "Search Donors" },
   ];
 
-  const handleLogout = () => {
-    console.log("Logout clicked");
+  const handleLogout = async () => {
+    try {
+      await logOut();
+      toast.success("Logged out successfully!");
+    } catch (error) {
+      console.error("Logout Error:", error);
+      toast.error("Failed to logout!");
+    }
   };
+
+  // Default avatar URL
+  const defaultAvatar = "https://i.ibb.co/MgsTCcv/user.jpg";
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -23,7 +38,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <MdBloodtype className="text-red-600 text-3xl" />
+            <MdBloodtype className="text-primary text-3xl" />
             <span className="text-xl font-bold text-primary">
               Blood<span className="text-secondary">Bank</span>
             </span>
@@ -47,7 +62,10 @@ const Navbar = () => {
               </NavLink>
             ))}
 
-            {user ? (
+            {loading ? (
+              // Loading state
+              <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+            ) : user ? (
               <>
                 <NavLink
                   to="/funding"
@@ -71,30 +89,49 @@ const Navbar = () => {
                   >
                     <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                       <img
-                        alt="User Avatar"
-                        src={
-                          user?.photoURL || "https://i.ibb.co/MgsTCcv/user.jpg"
-                        }
+                        alt={user?.displayName || "User Avatar"}
+                        src={user?.photoURL || defaultAvatar}
+                        onError={(e) => {
+                          e.target.src = defaultAvatar;
+                        }}
+                        className="object-cover"
                       />
                     </div>
                   </div>
                   <ul
                     tabIndex={0}
-                    className="mt-3 z-1 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+                    className="mt-3 z-1 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border"
                   >
-                    <li className="font-semibold text-center py-2">
-                      {user?.displayName || "User"}
+                    <li className="px-4 py-2">
+                      <span className="font-semibold text-neutral block">
+                        {user?.displayName || "User"}
+                      </span>
+                      <span className="text-xs text-gray-500 block truncate">
+                        {user?.email}
+                      </span>
                     </li>
-                    <hr />
+                    <hr className="my-1" />
                     <li>
-                      <Link to="/dashboard" className="py-2">
+                      <Link
+                        to="/dashboard"
+                        className="py-2 hover:bg-primary/10 hover:text-primary"
+                      >
                         Dashboard
                       </Link>
                     </li>
                     <li>
+                      <Link
+                        to="/dashboard/profile"
+                        className="py-2 hover:bg-primary/10 hover:text-primary"
+                      >
+                        My Profile
+                      </Link>
+                    </li>
+                    <hr className="my-1" />
+                    <li>
                       <button
                         onClick={handleLogout}
-                        className="py-2 text-red-500"
+                        className="py-2 text-red-500 hover:bg-red-50"
                       >
                         Logout
                       </button>
@@ -128,6 +165,28 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden pb-4">
             <div className="flex flex-col space-y-3">
+              {/* User Info (Mobile) */}
+              {user && (
+                <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-lg">
+                  <img
+                    src={user?.photoURL || defaultAvatar}
+                    alt={user?.displayName || "User"}
+                    onError={(e) => {
+                      e.target.src = defaultAvatar;
+                    }}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold text-neutral">
+                      {user?.displayName || "User"}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate max-w-37.5">
+                      {user?.email}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {navLinks.map((link) => (
                 <NavLink
                   key={link.path}
@@ -162,7 +221,10 @@ const Navbar = () => {
                     Dashboard
                   </NavLink>
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
                     className="text-sm font-medium py-2 px-4 rounded-lg text-red-500 hover:bg-red-50 text-left"
                   >
                     Logout
