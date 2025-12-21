@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import { FaHandHoldingHeart } from "react-icons/fa";
 const Home = () => {
   return (
     <div className="min-h-screen">
@@ -13,7 +15,13 @@ const Home = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="bg-white text-primary font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors">
-              Join as a Donor
+              <Link
+                to="/register"
+                className="bg-white text-primary font-semibold px-8 py-4 rounded-lg hover:bg-yellow-300 hover:text-secondary transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg"
+              >
+                <FaHandHoldingHeart size={20} />
+                <span>Join as a Donor</span>
+              </Link>
             </button>
             <button className="border-2 border-white text-white font-semibold px-8 py-3 rounded-lg hover:bg-white hover:text-primary transition-colors">
               Search Donors
@@ -77,6 +85,25 @@ const Home = () => {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* =============== CTA SECTION =============== */}
+      <section className="py-16 bg-gradient-to-r from-primary to-secondary text-white">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Save Lives?
+          </h2>
+          <p className="text-lg opacity-90 mb-8">
+            Join thousands of heroes who donate blood regularly. Your
+            contribution matters.
+          </p>
+          <Link
+            to="/register"
+            className="inline-block bg-white text-primary font-semibold px-10 py-4 rounded-lg hover:bg-yellow-300 transition-colors shadow-lg"
+          >
+            Become a Donor Today
+          </Link>
         </div>
       </section>
     </div>
