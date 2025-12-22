@@ -18,6 +18,7 @@ import AllDonationRequests from "../pages/Dashboard/Admin/AllDonationRequests";
 import ContentManagement from "../pages/Dashboard/Admin/ContentManagement";
 import PrivateRoute from "./PrivateRoute";
 import DashboardHome from "../pages/Dashboard/DashboardHome";
+import EditDonationRequest from "../pages/Dashboard/Donor/EditDonationRequest";
 
 export const router = createBrowserRouter([
   {
@@ -87,6 +88,10 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/my-donation-requests",
         element: <MyDonationRequests />,
+      },
+      {
+        path: "/dashboard/edit-donation-request/:id",
+        element: <EditDonationRequest />,
       },
       // Admin Routes
       {

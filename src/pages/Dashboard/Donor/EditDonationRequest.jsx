@@ -1,30 +1,29 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
-import { useQuery } from "@tanstack/react-query";
 import { districts, upazilas, bloodGroups } from "../../../utils/districts";
 import Loading from "../../../components/shared/Loading";
 
-const CreateDonationRequest = () => {
-  const { user } = useAuth();
+const EditDonationRequest = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
   const axiosPublic = useAxiosPublic();
-  const navigate = useNavigate();
 
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Check if user is blocked
-  const { data: userData, isLoading } = useQuery({
-    queryKey: ["userData", user?.email],
+  // Fetch request data
+  const { data: request, isLoading } = useQuery({
+    queryKey: ["donationRequest", id],
     queryFn: async () => {
-      const res = await axiosPublic.get(`/users/${user?.email}`);
+      const res = await axiosPublic.get(`/donation-requests/${id}`);
+      setSelectedDistrict(res.data.recipientDistrict);
       return res.data;
     },
-    enabled: !!user?.email,
   });
 
   // Handle form submit
@@ -34,9 +33,7 @@ const CreateDonationRequest = () => {
 
     const form = e.target;
 
-    const requestData = {
-      requesterName: user?.displayName,
-      requesterEmail: user?.email,
+    const updatedData = {
       recipientName: form.recipientName.value,
       recipientDistrict: form.recipientDistrict.value,
       recipientUpazila: form.recipientUpazila.value,
@@ -49,16 +46,17 @@ const CreateDonationRequest = () => {
     };
 
     try {
-      const res = await axiosSecure.post("/donation-requests", requestData);
+      const res = await axiosSecure.patch(
+        `/donation-requests/${id}`,
+        updatedData
+      );
 
-      if (res.data.insertedId) {
-        toast.success("Donation request created!");
-        form.reset();
+      if (res.data.modifiedCount > 0) {
+        toast.success("Request updated!");
         navigate("/dashboard/my-donation-requests");
       }
     } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || "Failed to create request");
+      toast.error("Failed to update", error);
     }
 
     setLoading(false);
@@ -66,45 +64,33 @@ const CreateDonationRequest = () => {
 
   if (isLoading) return <Loading />;
 
-  // If user is blocked
-  if (userData?.status === "blocked") {
-    return (
-      <div className="text-center py-10">
-        <h1 className="text-2xl font-bold text-red-500">Access Denied</h1>
-        <p className="text-gray-600 mt-2">
-          Your account is blocked. You cannot create donation requests.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Create Donation Request</h1>
+      <h1 className="text-2xl font-bold mb-4">Edit Donation Request</h1>
 
       <div className="bg-white p-6 rounded shadow max-w-2xl">
         <form onSubmit={handleSubmit}>
-          {/* Requester Name  */}
+          {/* Requester Name (Read Only) */}
           <div className="mb-3">
             <label className="block text-sm font-medium mb-1">
               Requester Name
             </label>
             <input
               type="text"
-              value={user?.displayName || ""}
+              value={request?.requesterName || ""}
               disabled
               className="w-full border p-2 rounded bg-gray-100"
             />
           </div>
 
-          {/* Requester Email */}
+          {/* Requester Email (Read Only) */}
           <div className="mb-3">
             <label className="block text-sm font-medium mb-1">
               Requester Email
             </label>
             <input
               type="email"
-              value={user?.email || ""}
+              value={request?.requesterEmail || ""}
               disabled
               className="w-full border p-2 rounded bg-gray-100"
             />
@@ -118,8 +104,8 @@ const CreateDonationRequest = () => {
             <input
               type="text"
               name="recipientName"
+              defaultValue={request?.recipientName}
               required
-              placeholder="Enter recipient name"
               className="w-full border p-2 rounded"
             />
           </div>
@@ -131,10 +117,10 @@ const CreateDonationRequest = () => {
             </label>
             <select
               name="bloodGroup"
+              defaultValue={request?.bloodGroup}
               required
               className="w-full border p-2 rounded"
             >
-              <option value="">Select Blood Group</option>
               {bloodGroups.map((group) => (
                 <option key={group} value={group}>
                   {group}
@@ -145,16 +131,14 @@ const CreateDonationRequest = () => {
 
           {/* District */}
           <div className="mb-3">
-            <label className="block text-sm font-medium mb-1">
-              Recipient District *
-            </label>
+            <label className="block text-sm font-medium mb-1">District *</label>
             <select
               name="recipientDistrict"
-              required
+              defaultValue={request?.recipientDistrict}
               onChange={(e) => setSelectedDistrict(e.target.value)}
+              required
               className="w-full border p-2 rounded"
             >
-              <option value="">Select District</option>
               {districts.map((d) => (
                 <option key={d.id} value={d.name}>
                   {d.name}
@@ -165,15 +149,13 @@ const CreateDonationRequest = () => {
 
           {/* Upazila */}
           <div className="mb-3">
-            <label className="block text-sm font-medium mb-1">
-              Recipient Upazila *
-            </label>
+            <label className="block text-sm font-medium mb-1">Upazila *</label>
             <select
               name="recipientUpazila"
+              defaultValue={request?.recipientUpazila}
               required
               className="w-full border p-2 rounded"
             >
-              <option value="">Select Upazila</option>
               {upazilas[selectedDistrict]?.map((u, i) => (
                 <option key={i} value={u}>
                   {u}
@@ -190,8 +172,8 @@ const CreateDonationRequest = () => {
             <input
               type="text"
               name="hospitalName"
+              defaultValue={request?.hospitalName}
               required
-              placeholder="Enter hospital name"
               className="w-full border p-2 rounded"
             />
           </div>
@@ -204,13 +186,13 @@ const CreateDonationRequest = () => {
             <input
               type="text"
               name="fullAddress"
+              defaultValue={request?.fullAddress}
               required
-              placeholder="Enter full address"
               className="w-full border p-2 rounded"
             />
           </div>
 
-          {/* Donation Date */}
+          {/* Date */}
           <div className="mb-3">
             <label className="block text-sm font-medium mb-1">
               Donation Date *
@@ -218,12 +200,13 @@ const CreateDonationRequest = () => {
             <input
               type="date"
               name="donationDate"
+              defaultValue={request?.donationDate}
               required
               className="w-full border p-2 rounded"
             />
           </div>
 
-          {/* Donation Time */}
+          {/* Time */}
           <div className="mb-3">
             <label className="block text-sm font-medium mb-1">
               Donation Time *
@@ -231,37 +214,47 @@ const CreateDonationRequest = () => {
             <input
               type="time"
               name="donationTime"
+              defaultValue={request?.donationTime}
               required
               className="w-full border p-2 rounded"
             />
           </div>
 
-          {/* Request Message */}
+          {/* Message */}
           <div className="mb-3">
             <label className="block text-sm font-medium mb-1">
               Request Message *
             </label>
             <textarea
               name="requestMessage"
+              defaultValue={request?.requestMessage}
               required
               rows="3"
-              placeholder="Why do you need blood?"
               className="w-full border p-2 rounded"
             ></textarea>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-red-500 text-white p-3 rounded hover:bg-red-600 mt-4"
-          >
-            {loading ? "Creating..." : "Create Request"}
-          </button>
+          {/* Buttons */}
+          <div className="flex gap-3 mt-4">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="flex-1 border p-2 rounded"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-green-500 text-white p-2 rounded"
+            >
+              {loading ? "Saving..." : "Update Request"}
+            </button>
+          </div>
         </form>
       </div>
     </div>
   );
 };
 
-export default CreateDonationRequest;
+export default EditDonationRequest;
