@@ -80,6 +80,7 @@ const CreateDonationRequest = () => {
 
   return (
     <div>
+      <title>Create Donation Request</title>
       <h1 className="text-2xl font-bold mb-4">Create Donation Request</h1>
 
       <div className="bg-white p-6 rounded shadow max-w-2xl">

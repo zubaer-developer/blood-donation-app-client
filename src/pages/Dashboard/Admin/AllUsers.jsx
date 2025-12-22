@@ -59,6 +59,7 @@ const AllUsers = () => {
 
   return (
     <div>
+      <title>All Users</title>
       <h1 className="text-2xl font-bold mb-4">All Users</h1>
 
       {/* Filter */}

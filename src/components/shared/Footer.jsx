@@ -18,10 +18,13 @@ const Footer = () => {
           {/* About Section */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <MdBloodtype className="text-primary text-3xl" />
-              <span className="text-xl font-bold">
-                Blood<span className="text-primary">Bank</span>
-              </span>
+              <Link
+                to="/"
+                className="flex items-center text-secondary space-x-2"
+              >
+                <MdBloodtype className="text-3xl" />
+                <span className="text-xl font-bold">BloodBank</span>
+              </Link>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
               Connecting blood donors with those in need. Every drop counts,

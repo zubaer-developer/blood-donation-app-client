@@ -71,6 +71,7 @@ const AllDonationRequests = () => {
 
   return (
     <div>
+      <title>All Donation Requests</title>
       <h1 className="text-2xl font-bold mb-4">All Blood Donation Requests</h1>
 
       {/* Filter */}

@@ -76,6 +76,7 @@ const MyDonationRequests = () => {
 
   return (
     <div>
+      <title>My Donation Requests</title>
       <h1 className="text-2xl font-bold mb-4">My Donation Requests</h1>
 
       {/* Filter */}

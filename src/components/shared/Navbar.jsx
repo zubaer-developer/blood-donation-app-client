@@ -37,11 +37,9 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <MdBloodtype className="text-primary text-3xl" />
-            <span className="text-xl font-bold text-primary">
-              Blood<span className="text-secondary">Bank</span>
-            </span>
+          <Link to="/" className="flex items-center text-secondary space-x-2">
+            <MdBloodtype className="text-3xl" />
+            <span className="text-xl font-bold">BloodBank</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -140,9 +138,32 @@ const Navbar = () => {
                 </div>
               </>
             ) : (
-              <Link to="/login" className="btn-blood">
-                Login
-              </Link>
+              <>
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    `text-sm font-medium transition-colors duration-200 ${
+                      isActive
+                        ? "text-primary"
+                        : "text-gray-700 hover:text-primary"
+                    }`
+                  }
+                >
+                  Login
+                </NavLink>
+                <NavLink
+                  to="/register"
+                  className={({ isActive }) =>
+                    `text-sm font-medium transition-colors duration-200 ${
+                      isActive
+                        ? "text-primary"
+                        : "text-gray-700 hover:text-primary"
+                    }`
+                  }
+                >
+                  Register
+                </NavLink>
+              </>
             )}
           </div>
 
@@ -231,13 +252,34 @@ const Navbar = () => {
                   </button>
                 </>
               ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="btn-blood text-center"
-                >
-                  Login
-                </Link>
+                <>
+                  <NavLink
+                    to="/login"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={({ isActive }) =>
+                      `text-sm font-medium transition-colors duration-200 ${
+                        isActive
+                          ? "text-primary"
+                          : "text-gray-700 hover:text-primary"
+                      }`
+                    }
+                  >
+                    Login
+                  </NavLink>
+                  <NavLink
+                    to="/register"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={({ isActive }) =>
+                      `text-sm font-medium transition-colors duration-200 ${
+                        isActive
+                          ? "text-primary"
+                          : "text-gray-700 hover:text-primary"
+                      }`
+                    }
+                  >
+                    Register
+                  </NavLink>
+                </>
               )}
             </div>
           </div>

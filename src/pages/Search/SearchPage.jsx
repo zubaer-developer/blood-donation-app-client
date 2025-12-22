@@ -83,6 +83,7 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <title>Search for Donors</title>
       {/* Hero Section */}
       <section className="bg-linear-to-r from-primary to-secondary text-white py-16">
         <div className="max-w-7xl mx-auto px-4 text-center">

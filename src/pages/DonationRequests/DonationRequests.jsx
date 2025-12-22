@@ -26,6 +26,7 @@ const DonationRequests = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
+      <title>Blood Donation Requests</title>
       <div className="max-w-6xl mx-auto px-4">
         {/* Page Header */}
         <div className="text-center mb-8">

@@ -65,13 +65,11 @@ const DashboardLayout = () => {
       >
         {/* Logo */}
         <div className="p-4 border-b border-gray-700">
-          <Link
-            to="/"
-            className="flex gap-1 items-center text-xl font-bold text-red-500"
-          >
-            <MdBloodtype className="text-3xl" /> BloodBank
+          <Link to="/" className="flex items-center text-secondary space-x-2">
+            <MdBloodtype className="text-3xl" />
+            <span className="text-xl font-bold">BloodBank</span>
           </Link>
-          <p className="text-sm text-gray-400 mt-1 capitalize">
+          <p className="text-sm text-gray-400 mt-1 ml-9 capitalize">
             {userRole} Dashboard
           </p>
         </div>

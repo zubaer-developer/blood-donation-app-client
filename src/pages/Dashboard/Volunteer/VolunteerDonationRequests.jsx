@@ -45,6 +45,7 @@ const VolunteerDonationRequests = () => {
 
   return (
     <div>
+      <title>All Donation Requests</title>
       <h1 className="text-2xl font-bold mb-2">All Blood Donation Requests</h1>
       <p className="text-orange-500 mb-4">
         As a volunteer, you can only update the status of requests.

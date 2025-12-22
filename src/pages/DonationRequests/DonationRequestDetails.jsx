@@ -65,6 +65,7 @@ const DonationRequestDetails = () => {
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
+      <title>Donation Request Details</title>
       {/* Back Button */}
       <Link to="/donation-requests" className="text-blue-500 underline">
         ← Back

@@ -87,6 +87,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-red-50 to-gray-100 flex items-center justify-center py-12 px-4">
+      <title>Login BloodBank</title>
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
@@ -94,10 +95,8 @@ const Login = () => {
             to="/"
             className="inline-flex items-center justify-center space-x-2 mb-4"
           >
-            <MdBloodtype className="text-primary text-4xl" />
-            <span className="text-2xl font-bold text-primary">
-              Blood<span className="text-secondary">Bank</span>
-            </span>
+            <MdBloodtype className="text-secondary text-4xl" />
+            <span className="text-2xl font-bold text-secondary">BloodBank</span>
           </Link>
           <h2 className="text-3xl font-bold text-neutral">Welcome Back!</h2>
           <p className="text-gray-600 mt-2">Sign in to continue saving lives</p>
