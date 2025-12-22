@@ -33,7 +33,7 @@ const Login = () => {
     try {
       // Sign in with Firebase
       const result = await signIn(data.email, data.password);
-      console.log("✅ Firebase login successful:", result.user.email);
+      console.log(" Firebase login successful:", result.user.email);
 
       // Get JWT token
       const tokenResponse = await axiosPublic.post("/jwt", {
@@ -42,7 +42,7 @@ const Login = () => {
 
       if (tokenResponse.data.token) {
         localStorage.setItem("access-token", tokenResponse.data.token);
-        console.log("🔑 JWT Token saved");
+        console.log(" JWT Token saved");
       }
 
       // Check user status from database

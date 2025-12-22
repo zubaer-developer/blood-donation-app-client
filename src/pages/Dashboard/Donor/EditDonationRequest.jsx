@@ -70,7 +70,7 @@ const EditDonationRequest = () => {
 
       <div className="bg-white p-6 rounded shadow max-w-2xl">
         <form onSubmit={handleSubmit}>
-          {/* Requester Name (Read Only) */}
+          {/* Requester Name */}
           <div className="mb-3">
             <label className="block text-sm font-medium mb-1">
               Requester Name
@@ -83,7 +83,7 @@ const EditDonationRequest = () => {
             />
           </div>
 
-          {/* Requester Email (Read Only) */}
+          {/* Requester Email */}
           <div className="mb-3">
             <label className="block text-sm font-medium mb-1">
               Requester Email
