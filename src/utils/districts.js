@@ -491,7 +491,15 @@ export const upazilas = {
     "Doulatpur",
     "Singiar",
   ],
-  Dhaka: ["Savar", "Dhamrai", "Keraniganj", "Nawabganj", "Dohar"],
+  Dhaka: [
+    "Dhaka City Corporation North",
+    "Dhaka City Corporation South",
+    "Savar",
+    "Dhamrai",
+    "Keraniganj",
+    "Nawabganj",
+    "Dohar",
+  ],
   Munshiganj: [
     "Munshiganj Sadar",
     "Sreenagar",

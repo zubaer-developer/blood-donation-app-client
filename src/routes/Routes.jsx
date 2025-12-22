@@ -17,6 +17,7 @@ import AllUsers from "../pages/Dashboard/Admin/AllUsers";
 import AllDonationRequests from "../pages/Dashboard/Admin/AllDonationRequests";
 import ContentManagement from "../pages/Dashboard/Admin/ContentManagement";
 import PrivateRoute from "./PrivateRoute";
+import DashboardHome from "../pages/Dashboard/DashboardHome";
 
 export const router = createBrowserRouter([
   {
@@ -72,7 +73,7 @@ export const router = createBrowserRouter([
       // Common Routes
       {
         path: "/dashboard",
-        element: <DonorHome />,
+        element: <DashboardHome />,
       },
       {
         path: "/dashboard/profile",
