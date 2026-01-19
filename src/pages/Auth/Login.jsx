@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { FaEye, FaEyeSlash, FaEnvelope, FaLock } from "react-icons/fa";
+import {
+  FaEye,
+  FaEyeSlash,
+  FaEnvelope,
+  FaLock,
+  FaGoogle,
+} from "react-icons/fa";
 import { MdBloodtype } from "react-icons/md";
 import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
@@ -9,14 +15,13 @@ import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { signIn } = useAuth();
+  const { signIn, googleSignIn, user, loading } = useAuth();
   const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get the page user was trying to access before login
   const from = location.state?.from?.pathname || "/";
 
   const {
@@ -25,212 +30,200 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  // Form submit handler
+  // redirect logic
+  useEffect(() => {
+    if (!loading && user?.email) {
+      navigate(from, { replace: true });
+    }
+  }, [user, loading, navigate, from]);
+
+  // email login
   const onSubmit = async (data) => {
-    setLoading(true);
-    console.log("🔐 Attempting login with:", data.email);
-
+    setIsSubmitting(true);
     try {
-      // Sign in with Firebase
       const result = await signIn(data.email, data.password);
-      console.log(" Firebase login successful:", result.user.email);
-
-      // Get JWT token
-      const tokenResponse = await axiosPublic.post("/jwt", {
-        email: data.email,
-      });
-
-      if (tokenResponse.data.token) {
-        localStorage.setItem("access-token", tokenResponse.data.token);
-        console.log(" JWT Token saved");
-      }
-
-      // Check user status from database
       const userResponse = await axiosPublic.get(`/users/${data.email}`);
       const userData = userResponse.data;
 
       if (userData?.status === "blocked") {
-        // If user is blocked, sign out and show error
-        toast.error("Your account has been blocked. Please contact admin.");
-        setLoading(false);
+        toast.error("Account blocked. Contact admin.");
+        setIsSubmitting(false);
         return;
       }
 
       toast.success(`Welcome back, ${result.user.displayName || "User"}!`);
-
-      // Redirect based on role
-      if (userData?.role === "admin" || userData?.role === "volunteer") {
-        navigate("/dashboard");
-      } else {
-        navigate(from, { replace: true });
-      }
     } catch (error) {
-      console.error("❌ Login Error:", error);
-
-      if (error.code === "auth/user-not-found") {
-        toast.error("No account found with this email.");
-      } else if (error.code === "auth/wrong-password") {
-        toast.error("Incorrect password. Please try again.");
-      } else if (error.code === "auth/invalid-email") {
-        toast.error("Invalid email address.");
-      } else if (error.code === "auth/too-many-requests") {
-        toast.error("Too many failed attempts. Please try again later.");
-      } else if (error.code === "auth/invalid-credential") {
-        toast.error("Invalid email or password.");
-      } else {
-        toast.error(error.message || "Login failed. Please try again.");
-      }
-    } finally {
-      setLoading(false);
+      console.error(error);
+      toast.error("Invalid credentials or connection error.");
+      setIsSubmitting(false);
     }
   };
 
+  // google login
+  const handleGoogleSignIn = async () => {
+    setIsSubmitting(true);
+    try {
+      const result = await googleSignIn();
+      const { email, displayName, photoURL } = result.user;
+
+      const userData = {
+        email,
+        name: displayName || "Google User",
+        avatar: photoURL || "https://i.ibb.co/MgsTCcv/user.jpg",
+        bloodGroup: "",
+        district: "",
+        upazila: "",
+      };
+
+      await axiosPublic.post("/users", userData);
+      const userResponse = await axiosPublic.get(`/users/${email}`);
+      const dbUser = userResponse.data;
+
+      if (dbUser?.status === "blocked") {
+        toast.error("Account blocked. Contact admin.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      toast.success(`Welcome, ${displayName || "User"}!`);
+    } catch (error) {
+      toast.error("Google sign-in failed.");
+      setIsSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <span className="loading loading-spinner loading-lg text-red-500"></span>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-linear-to-br from-red-50 to-gray-100 flex items-center justify-center py-12 px-4">
-      <title>Login BloodBank</title>
+    <div className="min-h-screen bg-base-100 flex items-center justify-center py-20 px-4">
+      <title>Login | BloodBank</title>
+
       <div className="max-w-md w-full">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center space-x-2 mb-4"
-          >
-            <MdBloodtype className="text-secondary text-4xl" />
-            <span className="text-2xl font-bold text-secondary">BloodBank</span>
+        {/* brand logo */}
+        <div className="text-center mb-10">
+          <Link to="/" className="inline-flex flex-col items-center group">
+            <div className="w-16 h-16 bg-red-500 rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:scale-110 transition-transform">
+              <MdBloodtype className="text-white text-4xl" />
+            </div>
+            <h1 className="text-3xl font-black mt-4 tracking-tighter">
+              Blood<span className="text-red-500">Bank</span>
+            </h1>
           </Link>
-          <h2 className="text-3xl font-bold text-neutral">Welcome Back!</h2>
-          <p className="text-gray-600 mt-2">Sign in to continue saving lives</p>
+          <p className="text-base-content/50 font-medium mt-2">
+            Sign in to save lives
+          </p>
         </div>
 
-        {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaEnvelope className="text-gray-400" />
+        {/* login card */}
+        <div className="bg-base-100 rounded-[2.5rem] border border-base-200 shadow-2xl overflow-hidden">
+          <div className="p-8 md:p-10">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* email field */}
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">
+                  Email Address
+                </label>
+                <div className="relative mt-2">
+                  <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-base-content/30" />
+                  <input
+                    type="email"
+                    placeholder="name@example.com"
+                    className={`w-full bg-base-200 border-none rounded-2xl py-4 pl-12 pr-4 font-bold focus:ring-4 ring-red-500/10 transition-all ${errors.email ? "ring-red-500/20 text-red-500" : ""}`}
+                    {...register("email", { required: "Email is required" })}
+                  />
                 </div>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className={`input-blood pl-10 ${
-                    errors.email ? "border-red-500 focus:ring-red-500" : ""
-                  }`}
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Invalid email address",
-                    },
-                  })}
-                />
+                {errors.email && (
+                  <p className="text-red-500 text-[10px] font-bold mt-2 ml-1 uppercase">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
 
-            {/* Password Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="text-gray-400" />
+              {/* password field */}
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">
+                  Password
+                </label>
+                <div className="relative mt-2">
+                  <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-base-content/30" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    className={`w-full bg-base-200 border-none rounded-2xl py-4 pl-12 pr-12 font-bold focus:ring-4 ring-red-500/10 transition-all ${errors.password ? "ring-red-500/20 text-red-500" : ""}`}
+                    {...register("password", {
+                      required: "Password is required",
+                    })}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-base-content/30 hover:text-red-500 transition-colors"
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
                 </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  className={`input-blood pl-10 pr-12 ${
-                    errors.password ? "border-red-500 focus:ring-red-500" : ""
-                  }`}
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
-                    },
-                  })}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? (
-                    <FaEyeSlash size={20} />
-                  ) : (
-                    <FaEye size={20} />
-                  )}
-                </button>
+                <div className="flex justify-end mt-2">
+                  <button
+                    type="button"
+                    className="text-[10px] font-black uppercase text-red-500 hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
               </div>
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
 
-            {/* Remember Me & Forgot Password just demo */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
-                />
-                <span className="ml-2 text-sm text-gray-600">Remember me</span>
-              </label>
+              {/* sign in button */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="btn btn-block h-14 bg-red-500 hover:bg-red-600 border-none text-white rounded-2xl font-black text-lg shadow-xl shadow-red-500/20 mt-4 transition-all active:scale-95"
+              >
+                {isSubmitting ? (
+                  <span className="loading loading-spinner"></span>
+                ) : (
+                  "Sign In"
+                )}
+              </button>
+
+              {/* social login */}
+              <div className="relative py-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-base-200"></div>
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-base-100 px-4 text-[10px] font-black uppercase opacity-30 tracking-widest">
+                    Or login with
+                  </span>
+                </div>
+              </div>
+
               <button
                 type="button"
-                className="text-sm text-primary hover:underline"
+                onClick={handleGoogleSignIn}
+                disabled={isSubmitting}
+                className="btn btn-block h-14 bg-base-100 border-2 border-base-200 hover:bg-base-200 text-base-content rounded-2xl font-black transition-all"
               >
-                Forgot Password?
+                <FaGoogle className="text-red-500 text-lg mr-2" />
+                Google
               </button>
-            </div>
+            </form>
+          </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-primary hover:bg-secondary text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <>
-                  <span className="loading loading-spinner loading-sm"></span>
-                  <span>Signing In...</span>
-                </>
-              ) : (
-                <>
-                  <FaLock />
-                  <span>Sign In</span>
-                </>
-              )}
-            </button>
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-500">
-                  New to BloodBank?
-                </span>
-              </div>
-            </div>
-
-            <Link
-              to="/register"
-              className="w-full block text-center border-2 border-primary text-primary font-semibold py-3 px-6 rounded-lg hover:bg-primary hover:text-white transition-all duration-300"
-            >
-              Create an Account
-            </Link>
-          </form>
+          {/* footer link */}
+          <div className="bg-base-200 py-6 text-center">
+            <p className="text-sm font-bold opacity-50">
+              New here?{" "}
+              <Link to="/register" className="text-red-500 hover:underline">
+                Create an account
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

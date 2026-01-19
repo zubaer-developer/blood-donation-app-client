@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import useAxiosPublic from "../hooks/useAxiosPublic";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../components/shared/Loading";
 import {
@@ -20,209 +20,248 @@ import { MdBloodtype } from "react-icons/md";
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user, logOut } = useAuth();
-  const axiosPublic = useAxiosPublic();
+  const { user, logOut, loading: authLoading } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Get user role from database
+  // fetch role logic
   const { data: dbUser, isLoading } = useQuery({
     queryKey: ["userRole", user?.email],
     queryFn: async () => {
-      const res = await axiosPublic.get(`/users/${user?.email}`);
+      const res = await axiosSecure.get(`/users/${user?.email}`);
       return res.data;
     },
-    enabled: !!user?.email,
+    enabled: !!user?.email && !authLoading,
   });
 
   const userRole = dbUser?.role || "donor";
 
-  // Handle logout
   const handleLogout = async () => {
     await logOut();
     navigate("/");
   };
 
-  if (isLoading) return <Loading />;
+  const isActive = (path) => location.pathname === path;
+
+  if (authLoading || isLoading) return <Loading />;
 
   return (
-    <div className="flex min-h-screen">
-      {/* Mobile Menu */}
+    <div className="flex min-h-screen bg-base-100 selection:bg-red-500/20">
+      {/* mobile toggle */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 bg-red-500 text-white p-2 rounded"
+        className="lg:hidden fixed top-5 right-5 z-[70] btn btn-ghost bg-base-200 btn-circle shadow-xl border border-base-300"
       >
-        {sidebarOpen ? <FaTimes /> : <FaBars />}
+        {sidebarOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
       </button>
 
-      {/* Sidebar */}
-      <div
+      {/* sidebar container */}
+      <aside
         className={`
-                fixed lg:static inset-y-0 left-0 z-40
-                w-64 bg-gray-800 text-white
-                transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-                lg:translate-x-0 transition-transform
-            `}
+          fixed lg:static inset-y-0 left-0 z-50
+          w-72 bg-base-100 border-r border-base-200
+          transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0 transition-all duration-300 ease-in-out
+          flex flex-col
+        `}
       >
-        {/* Logo */}
-        <div className="p-4 border-b border-gray-700">
-          <Link to="/" className="flex items-center text-secondary space-x-2">
-            <MdBloodtype className="text-3xl" />
-            <span className="text-xl font-bold">BloodBank</span>
+        {/* updated branding per instruction */}
+        <div className="p-8">
+          <Link to="/" className="flex items-center space-x-2 group">
+            <div className="bg-primary p-2 rounded-2xl group-hover:rotate-12 transition-transform duration-300">
+              <MdBloodtype className="text-2xl text-red-500" />
+            </div>
+            <span className="text-xl font-black tracking-tight">
+              Blood<span className="text-red-500">Bank</span>
+            </span>
           </Link>
-          <p className="text-sm text-gray-400 mt-1 ml-9 capitalize">
-            {userRole} Dashboard
-          </p>
+
+          <div className="mt-6 flex items-center gap-2 px-1">
+            <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></div>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">
+              {userRole} Portal
+            </span>
+          </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="p-4">
-          <ul className="space-y-2">
-            {/* Common Links */}
-            <li>
-              <Link
-                to="/dashboard"
-                className="flex gap-3 items-center  py-2 px-4 rounded hover:bg-gray-700"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <FaTachometerAlt />
-                Dashboard Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/dashboard/profile"
-                className="flex gap-3 items-center py-2 px-4 rounded hover:bg-gray-700"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <FaUserCircle></FaUserCircle> Profile
-              </Link>
-            </li>
-
-            {/* Donor Links */}
-            {userRole === "donor" && (
-              <>
-                <li>
-                  <Link
-                    to="/dashboard/my-donation-requests"
-                    className="flex gap-3 items-center py-2 px-4 rounded hover:bg-gray-700"
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    <FaListUl></FaListUl> My Donation Requests
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/dashboard/create-donation-request"
-                    className="flex gap-3 items-center py-2 px-4 rounded hover:bg-gray-700"
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    <FaPlusCircle></FaPlusCircle> Create Request
-                  </Link>
-                </li>
-              </>
-            )}
-
-            {/* Admin Links */}
-            {userRole === "admin" && (
-              <>
-                <li>
-                  <Link
-                    to="/dashboard/all-users"
-                    className="flex gap-3 items-center py-2 px-4 rounded hover:bg-gray-700"
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    <FaUsers></FaUsers> All Users
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/dashboard/all-blood-donation-request"
-                    className="flex gap-3 items-center py-2 px-4 rounded hover:bg-gray-700"
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    <MdBloodtype className="text-red-500 text-xl" /> All
-                    Donation Requests
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/dashboard/content-management"
-                    className="flex gap-3 items-center py-2 px-4 rounded hover:bg-gray-700"
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    <FaFileAlt></FaFileAlt> Content Management
-                  </Link>
-                </li>
-              </>
-            )}
-
-            {/* Volunteer Links */}
-            {userRole === "volunteer" && (
+        {/* nav links */}
+        <nav className="flex-1 overflow-y-auto px-4 space-y-8 custom-scrollbar">
+          {/* main section */}
+          <div>
+            <p className="text-[10px] font-black opacity-30 uppercase tracking-[0.2em] mb-4 ml-4">
+              Overview
+            </p>
+            <ul className="space-y-2">
               <li>
                 <Link
-                  to="/dashboard/volunteer/all-blood-donation-request"
-                  className="flex gap-3 items-center py-2 px-4 rounded hover:bg-gray-700"
+                  to="/dashboard"
+                  className={`flex gap-3 items-center py-3.5 px-5 rounded-2xl transition-all font-bold text-sm ${
+                    isActive("/dashboard")
+                      ? "bg-red-500 text-white shadow-lg shadow-red-500/20"
+                      : "hover:bg-base-200 opacity-70 hover:opacity-100"
+                  }`}
                   onClick={() => setSidebarOpen(false)}
                 >
-                  <MdBloodtype className="text-red-500 text-xl" /> All Donation
-                  Requests
+                  <FaTachometerAlt /> Statistics
                 </Link>
               </li>
-            )}
+              <li>
+                <Link
+                  to="/dashboard/profile"
+                  className={`flex gap-3 items-center py-3.5 px-5 rounded-2xl transition-all font-bold text-sm ${
+                    isActive("/dashboard/profile")
+                      ? "bg-red-500 text-white shadow-lg shadow-red-500/20"
+                      : "hover:bg-base-200 opacity-70 hover:opacity-100"
+                  }`}
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <FaUserCircle /> My Profile
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-            {/* Divider */}
-            <li className="border-t border-gray-700 my-4"></li>
+          {/* management section */}
+          <div>
+            <p className="text-[10px] font-black opacity-30 uppercase tracking-[0.2em] mb-4 ml-4">
+              Management
+            </p>
+            <ul className="space-y-2">
+              {userRole === "donor" && (
+                <>
+                  <li>
+                    <Link
+                      to="/dashboard/my-donation-requests"
+                      className={`flex gap-3 items-center py-3.5 px-5 rounded-2xl transition-all font-bold text-sm ${isActive("/dashboard/my-donation-requests") ? "bg-red-500 text-white shadow-md shadow-red-500/20" : "hover:bg-base-200 opacity-70"}`}
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      <FaListUl /> My Requests
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/dashboard/create-donation-request"
+                      className={`flex gap-3 items-center py-3.5 px-5 rounded-2xl transition-all font-bold text-sm ${isActive("/dashboard/create-donation-request") ? "bg-red-500 text-white shadow-md shadow-red-500/20" : "hover:bg-base-200 opacity-70"}`}
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      <FaPlusCircle /> Create Request
+                    </Link>
+                  </li>
+                </>
+              )}
 
-            {/* Back to Home */}
-            <li>
-              <Link
-                to="/"
-                className="flex gap-3 items-center py-2 px-4 rounded hover:bg-gray-700"
-              >
-                <FaHome></FaHome> Back to Home
-              </Link>
-            </li>
+              {userRole === "admin" && (
+                <>
+                  <li>
+                    <Link
+                      to="/dashboard/all-users"
+                      className={`flex gap-3 items-center py-3.5 px-5 rounded-2xl transition-all font-bold text-sm ${isActive("/dashboard/all-users") ? "bg-red-500 text-white" : "hover:bg-base-200 opacity-70"}`}
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      <FaUsers /> All Users
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/dashboard/all-blood-donation-request"
+                      className={`flex gap-3 items-center py-3.5 px-5 rounded-2xl transition-all font-bold text-sm ${isActive("/dashboard/all-blood-donation-request") ? "bg-red-500 text-white" : "hover:bg-base-200 opacity-70"}`}
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      <MdBloodtype className="text-xl" /> Donation Requests
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/dashboard/content-management"
+                      className={`flex gap-3 items-center py-3.5 px-5 rounded-2xl transition-all font-bold text-sm ${isActive("/dashboard/content-management") ? "bg-red-500 text-white" : "hover:bg-base-200 opacity-70"}`}
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      <FaFileAlt /> Content Manager
+                    </Link>
+                  </li>
+                </>
+              )}
 
-            {/* Logout */}
-            <li>
-              <button
-                onClick={handleLogout}
-                className="flex gap-3 items-center w-full text-left py-2 px-4 rounded hover:bg-red-600"
-              >
-                <FaSignOutAlt></FaSignOutAlt> Logout
-              </button>
-            </li>
-          </ul>
+              {userRole === "volunteer" && (
+                <li>
+                  <Link
+                    to="/dashboard/volunteer/all-blood-donation-request"
+                    className={`flex gap-3 items-center py-3.5 px-5 rounded-2xl transition-all font-bold text-sm ${isActive("/dashboard/volunteer/all-blood-donation-request") ? "bg-red-500 text-white" : "hover:bg-base-200 opacity-70"}`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <MdBloodtype className="text-xl" /> Donation Requests
+                  </Link>
+                </li>
+              )}
+            </ul>
+          </div>
+
+          {/* system section */}
+          <div>
+            <p className="text-[10px] font-black opacity-30 uppercase tracking-[0.2em] mb-4 ml-4">
+              System
+            </p>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  to="/"
+                  className="flex gap-3 items-center py-3.5 px-5 rounded-2xl hover:bg-base-200 opacity-70 transition-all font-bold text-sm"
+                >
+                  <FaHome /> Back to Home
+                </Link>
+              </li>
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="flex gap-3 items-center w-full text-left py-3.5 px-5 rounded-2xl text-red-500 hover:bg-red-50 transition-all font-black text-sm"
+                >
+                  <FaSignOutAlt /> Logout
+                </button>
+              </li>
+            </ul>
+          </div>
         </nav>
 
-        {/* User Info */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">
-          <div className="flex items-center gap-3">
-            <img
-              src={user?.photoURL || "https://i.ibb.co/MgsTCcv/user.jpg"}
-              alt="avatar"
-              className="w-10 h-10 rounded-full"
-            />
-            <div>
-              <p className="text-sm font-medium">{user?.displayName}</p>
-              <p className="text-xs text-gray-400">{user?.email}</p>
+        {/* profile footer card */}
+        <div className="p-4 mt-auto">
+          <div className="bg-base-200 p-4 rounded-[2rem] border border-base-300">
+            <div className="flex items-center gap-3">
+              <div className="avatar">
+                <div className="w-12 h-12 rounded-2xl ring-2 ring-red-500/20 ring-offset-2 ring-offset-base-100">
+                  <img
+                    src={user?.photoURL || "https://i.ibb.co/MgsTCcv/user.jpg"}
+                    alt="avatar"
+                  />
+                </div>
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-xs font-black truncate">
+                  {user?.displayName}
+                </p>
+                <p className="text-[9px] opacity-50 truncate font-bold uppercase tracking-wider">
+                  {user?.email}
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </aside>
 
-      {/* Overlay for mobile */}
+      {/* overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          className="fixed inset-0 bg-base-content/20 backdrop-blur-md z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}
 
-      {/* Main Content */}
-      <div className="flex-1 bg-gray-100 p-6 lg:p-8">
-        <Outlet context={{ userRole, dbUser }} />
-      </div>
+      {/* main content */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="p-6 lg:p-12 max-w-7xl mx-auto">
+          <Outlet context={{ userRole, dbUser }} />
+        </div>
+      </main>
     </div>
   );
 };

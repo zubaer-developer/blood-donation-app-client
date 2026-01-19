@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "./useAuth";
 
@@ -10,37 +11,45 @@ const useAxiosSecure = () => {
   const navigate = useNavigate();
   const { logOut } = useAuth();
 
-  // Request Interceptor - Add Authorization Header
-  axiosSecure.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem("access-token");
-      if (token) {
-        config.headers.authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-  );
+  useEffect(() => {
+    // Request Interceptor
+    const requestInterceptor = axiosSecure.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem("access-token");
+        if (token) {
+          config.headers.authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error),
+    );
 
-  // Response Interceptor - Handle 401 & 403 Errors
-  axiosSecure.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    async (error) => {
-      const status = error.response?.status;
+    // Response Interceptor
+    const responseInterceptor = axiosSecure.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const status = error.response?.status;
 
-      // If 401 or 403, logout user and redirect to login
-      if (status === 401 || status === 403) {
-        await logOut();
-        navigate("/login");
-      }
+        // Only logout on 401/403 if we have a token (meaning it expired or invalid)
+        if (status === 401 || status === 403) {
+          const token = localStorage.getItem("access-token");
+          if (token) {
+            console.log("Token invalid, logging out...");
+            await logOut();
+            navigate("/login");
+          }
+        }
 
-      return Promise.reject(error);
-    }
-  );
+        return Promise.reject(error);
+      },
+    );
+
+    // Cleanup interceptors on unmount
+    return () => {
+      axiosSecure.interceptors.request.eject(requestInterceptor);
+      axiosSecure.interceptors.response.eject(responseInterceptor);
+    };
+  }, [logOut, navigate]);
 
   return axiosSecure;
 };

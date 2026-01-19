@@ -9,6 +9,8 @@ import {
   FaUsers,
   FaSyringe,
   FaCheckCircle,
+  FaCalendarAlt,
+  FaShieldAlt,
 } from "react-icons/fa";
 
 const Home = () => {
@@ -16,14 +18,14 @@ const Home = () => {
     <div className="min-h-screen bg-base-100 text-base-content transition-colors duration-300">
       {/* 1. Hero Section */}
       <section className="relative h-[70vh] flex items-center justify-center bg-gradient-to-br from-primary via-secondary to-accent text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+        <div className="absolute inset-0 opacity-15 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
         <div className="max-w-7xl mx-auto px-4 text-center z-10">
           <h1 className="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight drop-shadow-2xl">
-            Donate Blood, <span className="text-yellow-300">Save Lives</span>
+            Give the Gift of <span className="text-yellow-300">Life</span>
           </h1>
           <p className="text-lg md:text-2xl mb-10 max-w-3xl mx-auto opacity-95 leading-relaxed font-medium">
-            Your donation can give someone another chance at life. Join our
-            exclusive community of heroes today.
+            Connect with donors instantly and help those in urgent need. Your
+            small contribution can be a miracle for someone else.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Link
@@ -36,7 +38,7 @@ const Home = () => {
               to="/search"
               className="btn btn-lg btn-outline text-white border-2 hover:bg-white hover:text-secondary px-10 border-white/50"
             >
-              <FaSearch /> Search Donors
+              <FaSearch /> Find Blood Now
             </Link>
           </div>
         </div>
@@ -46,171 +48,172 @@ const Home = () => {
       <section className="relative -mt-16 z-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 bg-base-200 shadow-2xl rounded-3xl p-8 border border-base-300 backdrop-blur-md">
-            {[
-              {
-                label: "Blood Donors",
-                value: "500+",
-                icon: <FaUsers />,
-                color: "text-primary",
-              },
-              {
-                label: "Lives Saved",
-                value: "1000+",
-                icon: <FaHandHoldingHeart />,
-                color: "text-secondary",
-              },
-              {
-                label: "Blood Camps",
-                value: "50+",
-                icon: <FaHospital />,
-                color: "text-accent",
-              },
-              {
-                label: "Support",
-                value: "24/7",
-                icon: <FaQuestionCircle />,
-                color: "text-info",
-              },
-            ].map((stat, i) => (
-              <div key={i} className="flex flex-col items-center p-4">
-                <div className={`${stat.color} text-3xl mb-3`}>{stat.icon}</div>
-                <h3 className="text-3xl md:text-4xl font-black">
-                  {stat.value}
-                </h3>
-                <p className="text-base-content/70 font-semibold uppercase tracking-widest text-xs mt-1">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
+            <div className="flex flex-col items-center p-4 text-center">
+              <FaUsers className="text-primary text-3xl mb-3" />
+              <h3 className="text-3xl md:text-4xl font-black">5.2k</h3>
+              <p className="text-base-content/70 font-semibold uppercase tracking-widest text-xs mt-1">
+                Verified Donors
+              </p>
+            </div>
+            <div className="flex flex-col items-center p-4 text-center">
+              <FaHandHoldingHeart className="text-secondary text-3xl mb-3" />
+              <h3 className="text-3xl md:text-4xl font-black">12k</h3>
+              <p className="text-base-content/70 font-semibold uppercase tracking-widest text-xs mt-1">
+                Successful Cases
+              </p>
+            </div>
+            <div className="flex flex-col items-center p-4 text-center">
+              <FaHospital className="text-accent text-3xl mb-3" />
+              <h3 className="text-3xl md:text-4xl font-black">85+</h3>
+              <p className="text-base-content/70 font-semibold uppercase tracking-widest text-xs mt-1">
+                Partner Hospitals
+              </p>
+            </div>
+            <div className="flex flex-col items-center p-4 text-center">
+              <FaCalendarAlt className="text-info text-3xl mb-3" />
+              <h3 className="text-3xl md:text-4xl font-black">150+</h3>
+              <p className="text-base-content/70 font-semibold uppercase tracking-widest text-xs mt-1">
+                Monthly Camps
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 3. Why Donate Section */}
+      {/* 3. Purpose Section */}
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="badge badge-primary badge-outline mb-4 p-4 font-bold uppercase">
-            Impact
+            Our Mission
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-12">
-            Why Donate Blood?
+            The Power of Donation
           </h2>
           <div className="grid md:grid-cols-3 gap-10">
-            {[
-              {
-                emoji: "🩸",
-                title: "Save Lives",
-                text: "A single drop of your blood could be the reason someone smiles again.",
-              },
-              {
-                emoji: "❤️",
-                title: "Health Benefits",
-                text: "Improve your cardiovascular health and maintain iron levels naturally.",
-              },
-              {
-                emoji: "🤝",
-                title: "Community Support",
-                text: "Build a stronger, safer society by being there in times of medical crisis.",
-              },
-            ].map((card, i) => (
-              <div
-                key={i}
-                className="group p-10 rounded-3xl bg-base-200 border border-base-300 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl"
-              >
-                <div className="text-6xl mb-6 group-hover:scale-110 transition-transform">
-                  {card.emoji}
-                </div>
-                <h3 className="text-2xl font-bold mb-4">{card.title}</h3>
-                <p className="text-base-content/60 leading-relaxed">
-                  {card.text}
-                </p>
-              </div>
-            ))}
+            <div className="group p-10 rounded-3xl bg-base-200 border border-base-300 hover:shadow-2xl transition-all">
+              <div className="text-6xl mb-6">🚑</div>
+              <h3 className="text-2xl font-bold mb-4">Emergency Support</h3>
+              <p className="text-base-content/60 leading-relaxed">
+                We provide critical blood supply during accidents and surgeries
+                when every second counts.
+              </p>
+            </div>
+            <div className="group p-10 rounded-3xl bg-base-200 border border-base-300 hover:shadow-2xl transition-all">
+              <div className="text-6xl mb-6">🧬</div>
+              <h3 className="text-2xl font-bold mb-4">Rare Groups</h3>
+              <p className="text-base-content/60 leading-relaxed">
+                Our platform helps locate rare blood types that are often
+                difficult to find in traditional banks.
+              </p>
+            </div>
+            <div className="group p-10 rounded-3xl bg-base-200 border border-base-300 hover:shadow-2xl transition-all">
+              <div className="text-6xl mb-6">🌿</div>
+              <h3 className="text-2xl font-bold mb-4">Free Checkups</h3>
+              <p className="text-base-content/60 leading-relaxed">
+                Every donor gets a complimentary health screening and blood test
+                report before donation.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 4. Donation Process */}
+      {/* 4. How It Works */}
       <section className="py-24 bg-base-200">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-4xl font-bold mb-16 text-center">How It Works</h2>
-          <div className="flex flex-col md:flex-row justify-between gap-8 text-center">
-            {[
-              {
-                step: "01",
-                title: "Registration",
-                desc: "Create a donor profile with your blood group.",
-              },
-              {
-                step: "02",
-                title: "Screening",
-                desc: "Brief health examination by medical experts.",
-              },
-              {
-                step: "03",
-                title: "Donation",
-                desc: "The process is safe and takes only 10 minutes.",
-              },
-              {
-                step: "04",
-                title: "Rest",
-                desc: "Relax with some snacks before you head out.",
-              },
-            ].map((item, i) => (
-              <div key={i} className="flex-1 relative">
-                <div className="text-7xl font-black text-primary/10 absolute -top-10 left-1/2 -translate-x-1/2">
-                  {item.step}
-                </div>
-                <h4 className="text-xl font-bold mb-3 relative z-10">
-                  {item.title}
-                </h4>
-                <p className="text-base-content/60 text-sm relative z-10">
-                  {item.desc}
-                </p>
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold mb-16">Simple 4-Step Process</h2>
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="relative p-6">
+              <div className="text-6xl font-black text-primary/10 absolute top-0 left-1/2 -translate-x-1/2">
+                01
               </div>
-            ))}
+              <h4 className="text-xl font-bold mb-3 relative z-10">
+                Quick Sign Up
+              </h4>
+              <p className="text-base-content/60 text-sm">
+                Register your profile and choose your blood group.
+              </p>
+            </div>
+            <div className="relative p-6">
+              <div className="text-6xl font-black text-primary/10 absolute top-0 left-1/2 -translate-x-1/2">
+                02
+              </div>
+              <h4 className="text-xl font-bold mb-3 relative z-10">
+                Health Check
+              </h4>
+              <p className="text-base-content/60 text-sm">
+                Our medical team ensures you are fit to donate blood.
+              </p>
+            </div>
+            <div className="relative p-6">
+              <div className="text-6xl font-black text-primary/10 absolute top-0 left-1/2 -translate-x-1/2">
+                03
+              </div>
+              <h4 className="text-xl font-bold mb-3 relative z-10">
+                Safe Donation
+              </h4>
+              <p className="text-base-content/60 text-sm">
+                Professional staff handles the process in a clean environment.
+              </p>
+            </div>
+            <div className="relative p-6">
+              <div className="text-6xl font-black text-primary/10 absolute top-0 left-1/2 -translate-x-1/2">
+                04
+              </div>
+              <h4 className="text-xl font-bold mb-3 relative z-10">
+                Relax & Refresh
+              </h4>
+              <p className="text-base-content/60 text-sm">
+                Enjoy refreshments and receive your donor certificate.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 5. Features Section with Pexels Image */}
+      {/* 5. Features Section */}
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-20 items-center">
-          <div className="relative">
-            <img
-              src="https://images.pexels.com/photos/6749773/pexels-photo-6749773.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-              alt="Donation"
-              className="rounded-[2rem] shadow-3xl w-full object-cover h-[500px]"
-            />
-          </div>
+          <img
+            src="https://images.pexels.com/photos/6749773/pexels-photo-6749773.jpeg?auto=compress&cs=tinysrgb&w=1260"
+            alt="Blood Donation Team"
+            className="rounded-[2rem] shadow-3xl w-full object-cover h-[500px]"
+          />
           <div>
-            <h2 className="text-4xl font-bold mb-8">Modern Features</h2>
+            <h2 className="text-4xl font-bold mb-8 italic">
+              Smart Donor Management
+            </h2>
             <div className="space-y-6">
-              {[
-                {
-                  t: "Verified Donors",
-                  d: "A database of verified and active donors.",
-                },
-                {
-                  t: "Urgent Requests",
-                  d: "Post blood requests and get notified in real-time.",
-                },
-                {
-                  t: "Advanced Dashboard",
-                  d: "Track your donation history and manage profile.",
-                },
-              ].map((f, i) => (
-                <div
-                  key={i}
-                  className="flex gap-4 p-4 rounded-2xl hover:bg-base-200 transition-colors"
-                >
-                  <FaCheckCircle className="text-primary text-2xl mt-1 shrink-0" />
-                  <div>
-                    <h4 className="font-bold text-lg">{f.t}</h4>
-                    <p className="text-base-content/60">{f.d}</p>
-                  </div>
+              <div className="flex gap-4 p-4 rounded-2xl bg-base-200">
+                <FaShieldAlt className="text-primary text-2xl mt-1 shrink-0" />
+                <div>
+                  <h4 className="font-bold text-lg">Identity Verification</h4>
+                  <p className="text-base-content/60 text-sm">
+                    All donors are verified through government-issued ID and
+                    phone number.
+                  </p>
                 </div>
-              ))}
+              </div>
+              <div className="flex gap-4 p-4 rounded-2xl bg-base-200">
+                <FaSyringe className="text-secondary text-2xl mt-1 shrink-0" />
+                <div>
+                  <h4 className="font-bold text-lg">Instant Alerts</h4>
+                  <p className="text-base-content/60 text-sm">
+                    Get real-time SMS and app notifications for urgent requests
+                    in your city.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4 p-4 rounded-2xl bg-base-200">
+                <FaCheckCircle className="text-accent text-2xl mt-1 shrink-0" />
+                <div>
+                  <h4 className="font-bold text-lg">History Tracking</h4>
+                  <p className="text-base-content/60 text-sm">
+                    Keep a record of your donations and know when you are
+                    eligible again.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -219,28 +222,53 @@ const Home = () => {
       {/* 6. Testimonials */}
       <section className="py-24 bg-neutral text-neutral-content">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-16">Real Heroes</h2>
+          <h2 className="text-4xl font-bold mb-16">Stories of Survival</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="card bg-base-100 text-base-content p-8 shadow-xl"
-              >
-                <FaQuoteLeft className="text-primary text-3xl mb-6 opacity-20" />
-                <p className="mb-8 italic">
-                  "I could find a donor for my sister's emergency surgery in
-                  just minutes. Highly recommended!"
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="avatar placeholder">
-                    <div className="bg-primary text-white rounded-full w-12">
-                      <span>JD</span>
-                    </div>
-                  </div>
-                  <div className="text-left font-bold">Alex Johnson</div>
-                </div>
+            <div className="card bg-base-100 text-base-content p-8 shadow-xl">
+              <FaQuoteLeft className="text-primary text-2xl mb-4" />
+              <p className="mb-8 italic">
+                "The search feature is incredible! I found an O-negative donor
+                for my father in just 15 minutes during an emergency."
+              </p>
+              <div className="flex items-center gap-4">
+                <img
+                  src="https://i.pravatar.cc/150?u=rahul"
+                  alt="User"
+                  className="w-12 h-12 rounded-full"
+                />
+                <div className="text-left font-bold">Rahul Ahmed</div>
               </div>
-            ))}
+            </div>
+            <div className="card bg-base-100 text-base-content p-8 shadow-xl">
+              <FaQuoteLeft className="text-primary text-2xl mb-4" />
+              <p className="mb-8 italic">
+                "Being a regular donor here makes me feel like a hero. The
+                process is smooth and very well organized."
+              </p>
+              <div className="flex items-center gap-4">
+                <img
+                  src="https://i.pravatar.cc/150?u=sarah"
+                  alt="User"
+                  className="w-12 h-12 rounded-full"
+                />
+                <div className="text-left font-bold">Sarah Williams</div>
+              </div>
+            </div>
+            <div className="card bg-base-100 text-base-content p-8 shadow-xl">
+              <FaQuoteLeft className="text-primary text-2xl mb-4" />
+              <p className="mb-8 italic">
+                "I requested blood for a Thalassemia patient and received over
+                10 calls within an hour. Amazing community support!"
+              </p>
+              <div className="flex items-center gap-4">
+                <img
+                  src="https://i.pravatar.cc/150?u=karim"
+                  alt="User"
+                  className="w-12 h-12 rounded-full"
+                />
+                <div className="text-left font-bold">Karim Ullah</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -248,28 +276,28 @@ const Home = () => {
       {/* 7. FAQ Section */}
       <section className="py-24">
         <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-4xl font-bold mb-12 text-center">
-            Common Questions
-          </h2>
+          <h2 className="text-4xl font-bold mb-12 text-center">General FAQ</h2>
           <div className="join join-vertical w-full bg-base-200">
             <div className="collapse collapse-arrow join-item border border-base-300">
-              <input type="radio" name="faq-accordion" defaultChecked />
+              <input type="radio" name="faq" defaultChecked />
               <div className="collapse-title text-xl font-bold">
-                How often can I donate?
+                Who is eligible to donate?
               </div>
               <div className="collapse-content">
-                <p>You can donate whole blood every 8 weeks.</p>
+                <p className="text-base-content/70">
+                  Anyone aged 18-60, weighing above 50kg, and in good health.
+                </p>
               </div>
             </div>
             <div className="collapse collapse-arrow join-item border border-base-300">
-              <input type="radio" name="faq-accordion" />
+              <input type="radio" name="faq" />
               <div className="collapse-title text-xl font-bold">
-                Is it safe?
+                Will it weaken my immune system?
               </div>
               <div className="collapse-content">
-                <p>
-                  Yes, the process is completely safe and supervised by
-                  professionals.
+                <p className="text-base-content/70">
+                  No, your body replenishes the lost fluid within 48 hours and
+                  cells within weeks.
                 </p>
               </div>
             </div>
@@ -277,72 +305,108 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 8. Blogs Section with Pexels Images */}
+      {/* 8. Recent Blogs */}
       <section className="py-24 bg-base-200">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-4xl font-bold mb-12">Stay Informed</h2>
+          <h2 className="text-4xl font-bold mb-12 text-center">
+            Health Tips & Articles
+          </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              "https://images.pexels.com/photos/6749778/pexels-photo-6749778.jpeg",
-              "https://images.pexels.com/photos/6749777/pexels-photo-6749777.jpeg",
-              "https://images.pexels.com/photos/6749780/pexels-photo-6749780.jpeg",
-            ].map((img, i) => (
-              <div
-                key={i}
-                className="card bg-base-100 shadow-sm hover:shadow-2xl overflow-hidden"
-              >
-                <figure>
-                  <img
-                    src={`${img}?auto=compress&cs=tinysrgb&w=600`}
-                    alt="Blog"
-                    className="h-56 w-full object-cover"
-                  />
-                </figure>
-                <div className="card-body">
-                  <h4 className="card-title font-bold">Safe Practices 2024</h4>
-                  <p className="text-sm opacity-70">
-                    Everything you need to know about staying healthy after
-                    donation.
-                  </p>
-                </div>
+            <div className="card bg-base-100 shadow-xl overflow-hidden">
+              <figure>
+                <img
+                  src="https://images.pexels.com/photos/6749778/pexels-photo-6749778.jpeg?auto=compress&w=600"
+                  alt="Diet"
+                  className="h-56 w-full object-cover"
+                />
+              </figure>
+              <div className="card-body">
+                <h4 className="card-title font-bold">Post-Donation Diet</h4>
+                <p className="text-sm opacity-70">
+                  Foods to eat to recover faster and boost your energy levels
+                  instantly.
+                </p>
               </div>
-            ))}
+            </div>
+            <div className="card bg-base-100 shadow-xl overflow-hidden">
+              <figure>
+                <img
+                  src="https://images.pexels.com/photos/3952124/pexels-photo-3952124.jpeg?auto=compress&w=600"
+                  alt="Checkup"
+                  className="h-56 w-full object-cover"
+                />
+              </figure>
+              <div className="card-body">
+                <h4 className="card-title font-bold">
+                  Importance of Screening
+                </h4>
+                <p className="text-sm opacity-70">
+                  Why medical checkups are vital before you sit for a donation
+                  session.
+                </p>
+              </div>
+            </div>
+            <div className="card bg-base-100 shadow-xl overflow-hidden">
+              <figure>
+                <img
+                  src="https://images.pexels.com/photos/6749777/pexels-photo-6749777.jpeg?auto=compress&w=600"
+                  alt="Blood"
+                  className="h-56 w-full object-cover"
+                />
+              </figure>
+              <div className="card-body">
+                <h4 className="card-title font-bold">
+                  Understanding Blood Types
+                </h4>
+                <p className="text-sm opacity-70">
+                  A complete guide to ABO and Rh blood groups and their
+                  compatibility.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* 9. Newsletter Section */}
       <section className="py-24 px-4">
-        <div className="max-w-6xl mx-auto bg-gradient-to-r from-secondary to-primary rounded-[3rem] p-12 text-center text-white shadow-2xl">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Stay Heroic.</h2>
+        <div className="max-w-6xl mx-auto bg-linear-to-r from-secondary to-primary rounded-[3rem] p-12 text-center text-white shadow-2xl">
+          <FaEnvelope className="text-5xl mx-auto mb-6 opacity-30" />
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Never Miss a Request
+          </h2>
+          <p className="mb-10 text-lg opacity-90 max-w-2xl mx-auto">
+            Get monthly health tips and urgent blood alerts directly in your
+            inbox.
+          </p>
           <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
             <input
               type="email"
-              placeholder="hero@example.com"
+              placeholder="Email Address"
               className="input input-lg w-full text-gray-800"
             />
-            <button className="btn btn-lg bg-neutral text-white border-none">
-              Join
+            <button className="btn btn-lg bg-neutral text-white border-none px-8">
+              Subscribe
             </button>
           </div>
         </div>
       </section>
 
       {/* 10. Call to Action */}
-      <section className="py-24 text-center relative overflow-hidden">
+      <section className="py-24 text-center relative">
         <div className="max-w-4xl mx-auto px-4 relative z-10">
-          <h2 className="text-5xl md:text-7xl font-black mb-8 italic italic">
-            READY TO HELP?
+          <h2 className="text-5xl md:text-7xl font-black mb-8 italic">
+            START SAVING LIVES
           </h2>
           <Link
             to="/register"
-            className="btn btn-xl btn-primary shadow-2xl rounded-full px-12"
+            className="btn btn-xl btn-primary shadow-2xl rounded-full px-12 transform hover:scale-110 transition-all"
           >
-            Become a Donor
+            Register As Donor
           </Link>
         </div>
-        <div className="absolute top-1/2 left-0 -translate-y-1/2 opacity-5 text-[20rem] font-black pointer-events-none">
-          BLOOD
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 opacity-5 text-[20rem] font-black select-none pointer-events-none">
+          HERO
         </div>
       </section>
     </div>

@@ -9,7 +9,6 @@ import DonationRequests from "../pages/DonationRequests/DonationRequests";
 import DonationRequestDetails from "../pages/DonationRequests/DonationRequestDetails";
 import Funding from "../pages/Funding/Funding";
 import Profile from "../pages/Dashboard/Profile/Profile";
-import DonorHome from "../pages/Dashboard/Donor/DonorHome";
 import CreateDonationRequest from "../pages/Dashboard/Donor/CreateDonationRequest";
 import MyDonationRequests from "../pages/Dashboard/Donor/MyDonationRequests";
 import AdminHome from "../pages/Dashboard/Admin/AdminHome";

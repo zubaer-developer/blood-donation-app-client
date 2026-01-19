@@ -7,146 +7,158 @@ import {
   FaLinkedin,
   FaPhone,
   FaEnvelope,
-  FaMapMarkerAlt,
+  FaHeart,
+  FaChevronRight,
 } from "react-icons/fa";
 
 const Footer = () => {
+  // nav links
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "Donation Requests", path: "/donation-requests" },
+    { name: "Search Donors", path: "/search" },
+    { name: "Funding & Support", path: "/funding" },
+    { name: "Become a Donor", path: "/register" },
+  ];
+
+  // blood group list
+  const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
   return (
-    <footer className="bg-neutral text-white">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* About Section */}
-          <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <Link
-                to="/"
-                className="flex items-center text-secondary space-x-2"
-              >
-                <MdBloodtype className="text-3xl" />
-                <span className="text-xl font-bold">BloodBank</span>
-              </Link>
-            </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Connecting blood donors with those in need. Every drop counts,
-              every donation saves lives. Join us in making a difference.
+    <footer className="relative bg-neutral text-neutral-content pt-20 transition-colors duration-300">
+      {/* top accent line */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
+
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          {/* 1. Brand section (Your default logo) */}
+          <div className="space-y-6">
+            <Link to="/" className="flex items-center space-x-2 group">
+              <div className="bg-primary p-2 rounded-2xl group-hover:rotate-12 transition-transform duration-300">
+                <MdBloodtype className="text-2xl text-red-500" />
+              </div>
+              <span className="text-xl font-black tracking-tight text-white">
+                Blood<span className="text-red-500">Bank</span>
+              </span>
+            </Link>
+
+            <p className="text-neutral-content/60 text-sm leading-relaxed">
+              Connecting life-savers with those in urgent need. Join our
+              community to make a real difference in healthcare.
             </p>
-            {/* Social Icons */}
-            <div className="flex space-x-4 mt-4">
-              <a
-                href="#"
-                className="text-gray-400 hover:text-primary transition-colors"
-              >
-                <FaFacebook size={20} />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-primary transition-colors"
-              >
-                <FaTwitter size={20} />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-primary transition-colors"
-              >
-                <FaInstagram size={20} />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-primary transition-colors"
-              >
-                <FaLinkedin size={20} />
-              </a>
-            </div>
-          </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/"
-                  className="text-gray-400 hover:text-primary transition-colors text-sm"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/donation-requests"
-                  className="text-gray-400 hover:text-primary transition-colors text-sm"
-                >
-                  Donation Requests
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/search"
-                  className="text-gray-400 hover:text-primary transition-colors text-sm"
-                >
-                  Search Donors
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/register"
-                  className="text-gray-400 hover:text-primary transition-colors text-sm"
-                >
-                  Become a Donor
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Blood Groups */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Blood Groups</h3>
-            <div className="grid grid-cols-4 gap-2">
-              {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
-                (group) => (
-                  <span
-                    key={group}
-                    className="bg-primary/20 text-primary text-xs font-semibold px-2 py-1 rounded text-center"
+            {/* socials */}
+            <div className="flex space-x-3">
+              {[FaFacebook, FaTwitter, FaInstagram, FaLinkedin].map(
+                (Icon, idx) => (
+                  <a
+                    key={idx}
+                    href="#"
+                    className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all duration-300 border border-white/10"
                   >
-                    {group}
-                  </span>
-                )
+                    <Icon size={16} />
+                  </a>
+                ),
               )}
             </div>
           </div>
 
-          {/* Contact Info */}
+          {/* 2. Navigation */}
+          <div className="lg:pl-10">
+            <h3 className="text-white text-sm font-bold uppercase tracking-widest mb-8 flex items-center">
+              <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+              Links
+            </h3>
+            <ul className="space-y-4">
+              {navLinks.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    to={link.path}
+                    className="text-neutral-content/60 hover:text-red-500 transition-all duration-300 text-sm font-bold flex items-center group"
+                  >
+                    <FaChevronRight className="text-[10px] mr-2 opacity-0 group-hover:opacity-100 transition-all" />
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* 3. Resources grid */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
-            <ul className="space-y-3">
-              <li className="flex items-center space-x-3">
-                <FaPhone className="text-primary" />
-                <span className="text-gray-400 text-sm">+880 1234-567890</span>
+            <h3 className="text-white text-sm font-bold uppercase tracking-widest mb-8 flex items-center">
+              <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+              Blood Groups
+            </h3>
+            <div className="grid grid-cols-4 gap-2">
+              {bloodGroups.map((group) => (
+                <div
+                  key={group}
+                  className="aspect-square bg-white/5 border border-white/10 text-white text-[10px] font-black flex items-center justify-center rounded-xl hover:bg-red-500 hover:border-red-500 transition-all duration-300 cursor-default"
+                >
+                  {group}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 4. Contact */}
+          <div className="lg:ml-auto">
+            <h3 className="text-white text-sm font-bold uppercase tracking-widest mb-8 flex items-center">
+              <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+              Contact Us
+            </h3>
+            <ul className="space-y-6">
+              <li className="flex items-center space-x-4">
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-red-500 border border-white/10">
+                  <FaPhone size={14} />
+                </div>
+                <div>
+                  <p className="text-[10px] text-neutral-content/40 font-bold uppercase tracking-widest">
+                    Helpline
+                  </p>
+                  <p className="text-white text-sm font-bold">
+                    +880 1738305766
+                  </p>
+                </div>
               </li>
-              <li className="flex items-center space-x-3">
-                <FaEnvelope className="text-primary" />
-                <span className="text-gray-400 text-sm">
-                  info@bloodbank.com
-                </span>
-              </li>
-              <li className="flex items-start space-x-3">
-                <FaMapMarkerAlt className="text-primary mt-1" />
-                <span className="text-gray-400 text-sm">
-                  123 Medical Center Road,
-                  <br />
-                  Dhaka, Bangladesh
-                </span>
+              <li className="flex items-center space-x-4">
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-red-500 border border-white/10">
+                  <FaEnvelope size={14} />
+                </div>
+                <div>
+                  <p className="text-[10px] text-neutral-content/40 font-bold uppercase tracking-widest">
+                    Email
+                  </p>
+                  <p className="text-white text-sm font-bold">
+                    zubaer.developer@gmail.com
+                  </p>
+                </div>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-          <p className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} BloodBank. All rights reserved. Made
-            with Love for humanity.
+        {/* bottom bar */}
+        <div className="border-t border-white/5 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-neutral-content/40 text-[11px] font-bold uppercase tracking-widest">
+            © {new Date().getFullYear()} BloodBank. All Rights Reserved.
           </p>
+
+          <div className="flex items-center space-x-2 text-[10px] text-neutral-content/40 font-bold uppercase">
+            <span>Made with</span>
+            <FaHeart className="text-red-500 animate-pulse" />
+            <span>for humanity</span>
+          </div>
+
+          <div className="flex space-x-6 text-[11px] font-bold uppercase tracking-widest text-neutral-content/40">
+            <a href="#" className="hover:text-red-500 transition-all">
+              Privacy
+            </a>
+            <a href="#" className="hover:text-red-500 transition-all">
+              Terms
+            </a>
+          </div>
         </div>
       </div>
     </footer>

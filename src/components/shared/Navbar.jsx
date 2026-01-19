@@ -1,58 +1,78 @@
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
-import { FaBars, FaTimes } from "react-icons/fa";
-import { MdBloodtype } from "react-icons/md";
+import {
+  FaBars,
+  FaTimes,
+  FaSun,
+  FaMoon,
+  FaUserCircle,
+  FaThLarge,
+} from "react-icons/fa";
+import { MdBloodtype, MdDashboard } from "react-icons/md";
 import useAuth from "../../hooks/useAuth";
 import toast from "react-hot-toast";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, logOut, loading } = useAuth();
+  const { user, logOut, loading, theme, toggleTheme } = useAuth();
 
-  console.log("User:", user);
-  console.log("PhotoURL:", user?.photoURL);
-  console.log("DisplayName:", user?.displayName);
-
-  const navLinks = [
+  // Basic routes
+  const publicLinks = [
     { path: "/", label: "Home" },
     { path: "/donation-requests", label: "Donation Requests" },
     { path: "/search", label: "Search Donors" },
   ];
 
+  // Auth routes
+  const authLinks = [...publicLinks, { path: "/funding", label: "Funding" }];
+
   const handleLogout = async () => {
     try {
       await logOut();
-      toast.success("Logged out successfully!");
+      toast.success("Logged out!");
     } catch (error) {
-      console.error("Logout Error:", error);
-      toast.error("Failed to logout!");
+      toast.error("Logout failed!");
     }
   };
 
-  // Default avatar URL
   const defaultAvatar = "https://i.ibb.co/MgsTCcv/user.jpg";
 
+  // loader during auth check
+  if (loading) {
+    return (
+      <nav className="bg-base-100 h-20 shadow-sm sticky top-0 z-50 flex items-center justify-center">
+        <span className="loading loading-ring loading-lg text-primary"></span>
+      </nav>
+    );
+  }
+
+  const currentLinks = user ? authLinks : publicLinks;
+
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className="bg-base-100/80 backdrop-blur-md text-base-content shadow-sm sticky top-0 z-50 transition-all border-b border-base-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center text-secondary space-x-2">
-            <MdBloodtype className="text-3xl" />
-            <span className="text-xl font-bold">BloodBank</span>
+        <div className="flex justify-between items-center h-20">
+          {/* logo section */}
+          <Link to="/" className="flex items-center space-x-2 group">
+            <div className="bg-primary p-2 rounded-2xl group-hover:rotate-12 transition-transform duration-300">
+              <MdBloodtype className="text-2xl text-red-500" />
+            </div>
+            <span className="text-xl font-black tracking-tight">
+              Blood<span className="text-red-500">Bank</span>
+            </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
+          {/* desktop menu */}
+          <div className="hidden md:flex items-center space-x-1">
+            {currentLinks.map((link) => (
               <NavLink
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `text-sm font-medium transition-colors duration-200 ${
+                  `px-4 py-2 text-sm font-bold rounded-xl transition-all ${
                     isActive
-                      ? "text-primary"
-                      : "text-gray-700 hover:text-primary"
+                      ? "bg-primary/10 text-primary"
+                      : "hover:bg-base-200 opacity-70 hover:opacity-100"
                   }`
                 }
               >
@@ -60,231 +80,165 @@ const Navbar = () => {
               </NavLink>
             ))}
 
-            {loading ? (
-              // Loading state
-              <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
-            ) : user ? (
-              <>
-                <NavLink
-                  to="/funding"
-                  className={({ isActive }) =>
-                    `text-sm font-medium transition-colors duration-200 ${
-                      isActive
-                        ? "text-primary"
-                        : "text-gray-700 hover:text-primary"
-                    }`
-                  }
-                >
-                  Funding
-                </NavLink>
+            <div className="h-6 w-[1px] bg-base-300 mx-2"></div>
 
-                {/* User Dropdown */}
+            {/* theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="btn btn-ghost btn-circle btn-sm"
+            >
+              {theme === "light" ? (
+                <FaMoon className="text-indigo-600" />
+              ) : (
+                <FaSun className="text-yellow-400" />
+              )}
+            </button>
+
+            {user ? (
+              <div className="flex items-center gap-3 ml-2">
+                {/* Advanced menu (Requirement 2) */}
                 <div className="dropdown dropdown-end">
                   <div
                     tabIndex={0}
                     role="button"
-                    className="btn btn-ghost btn-circle avatar"
+                    className="avatar online cursor-pointer"
                   >
-                    <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                    <div className="w-10 rounded-2xl border-2 border-primary ring ring-primary ring-offset-base-100 ring-offset-2">
                       <img
-                        alt={user?.displayName || "User Avatar"}
                         src={user?.photoURL || defaultAvatar}
-                        onError={(e) => {
-                          e.target.src = defaultAvatar;
-                        }}
-                        className="object-cover"
+                        alt="Profile"
                       />
                     </div>
                   </div>
                   <ul
                     tabIndex={0}
-                    className="mt-3 z-1 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border"
+                    className="mt-4 z-[1] p-3 shadow-2xl menu dropdown-content bg-base-100 rounded-2xl w-64 border border-base-200"
                   >
-                    <li className="px-4 py-2">
-                      <span className="font-semibold text-neutral block">
-                        {user?.displayName || "User"}
-                      </span>
-                      <span className="text-xs text-gray-500 block truncate">
+                    <li className="p-4 bg-base-200 rounded-xl mb-2">
+                      <p className="font-black text-primary truncate">
+                        {user?.displayName}
+                      </p>
+                      <p className="text-[10px] opacity-60 truncate">
                         {user?.email}
-                      </span>
+                      </p>
                     </li>
-                    <hr className="my-1" />
                     <li>
-                      <Link
-                        to="/dashboard"
-                        className="py-2 hover:bg-primary/10 hover:text-primary"
-                      >
-                        Dashboard
+                      <Link to="/dashboard" className="font-bold">
+                        <MdDashboard /> Dashboard
                       </Link>
                     </li>
                     <li>
-                      <Link
-                        to="/dashboard/profile"
-                        className="py-2 hover:bg-primary/10 hover:text-primary"
-                      >
-                        My Profile
+                      <Link to="/dashboard/profile" className="font-bold">
+                        <FaUserCircle /> My Profile
                       </Link>
                     </li>
-                    <hr className="my-1" />
+                    <div className="divider my-1"></div>
                     <li>
                       <button
                         onClick={handleLogout}
-                        className="py-2 text-red-500 hover:bg-red-50"
+                        className="btn btn-error btn-sm text-white font-bold"
                       >
                         Logout
                       </button>
                     </li>
                   </ul>
                 </div>
-              </>
+              </div>
             ) : (
-              <>
-                <NavLink
+              <div className="flex items-center gap-2 ml-2">
+                <Link
                   to="/login"
-                  className={({ isActive }) =>
-                    `text-sm font-medium transition-colors duration-200 ${
-                      isActive
-                        ? "text-primary"
-                        : "text-gray-700 hover:text-primary"
-                    }`
-                  }
+                  className="btn btn-ghost btn-sm font-bold rounded-xl"
                 >
                   Login
-                </NavLink>
-                <NavLink
+                </Link>
+                <Link
                   to="/register"
-                  className={({ isActive }) =>
-                    `text-sm font-medium transition-colors duration-200 ${
-                      isActive
-                        ? "text-primary"
-                        : "text-gray-700 hover:text-primary"
-                    }`
-                  }
+                  className="btn btn-primary btn-sm px-6 rounded-xl font-bold shadow-lg shadow-primary/20"
                 >
-                  Register
-                </NavLink>
-              </>
+                  Join Now
+                </Link>
+              </div>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          {/* mobile trigger buttons */}
+          <div className="md:hidden flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="btn btn-ghost btn-sm btn-circle"
+            >
+              {theme === "light" ? (
+                <FaMoon />
+              ) : (
+                <FaSun className="text-yellow-400" />
+              )}
+            </button>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-primary focus:outline-none"
+              className="btn btn-primary btn-sm btn-square rounded-xl"
             >
-              {isMenuOpen ? (
-                <FaTimes className="text-2xl" />
-              ) : (
-                <FaBars className="text-2xl" />
-              )}
+              {isMenuOpen ? <FaTimes /> : <FaBars />}
             </button>
           </div>
         </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden pb-4">
-            <div className="flex flex-col space-y-3">
-              {/* User Info (Mobile) */}
-              {user && (
-                <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-lg">
-                  <img
-                    src={user?.photoURL || defaultAvatar}
-                    alt={user?.displayName || "User"}
-                    onError={(e) => {
-                      e.target.src = defaultAvatar;
-                    }}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="font-semibold text-neutral">
-                      {user?.displayName || "User"}
-                    </p>
-                    <p className="text-xs text-gray-500 truncate max-w-37.5">
-                      {user?.email}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `text-sm font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
-                      isActive
-                        ? "bg-primary text-white"
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-
-              {user ? (
-                <>
-                  <NavLink
-                    to="/funding"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="text-sm font-medium py-2 px-4 rounded-lg text-gray-700 hover:bg-gray-100"
-                  >
-                    Funding
-                  </NavLink>
-                  <NavLink
-                    to="/dashboard"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="text-sm font-medium py-2 px-4 rounded-lg text-gray-700 hover:bg-gray-100"
-                  >
-                    Dashboard
-                  </NavLink>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="text-sm font-medium py-2 px-4 rounded-lg text-red-500 hover:bg-red-50 text-left"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <NavLink
-                    to="/login"
-                    onClick={() => setIsMenuOpen(false)}
-                    className={({ isActive }) =>
-                      `text-sm font-medium transition-colors duration-200 ${
-                        isActive
-                          ? "text-primary"
-                          : "text-gray-700 hover:text-primary"
-                      }`
-                    }
-                  >
-                    Login
-                  </NavLink>
-                  <NavLink
-                    to="/register"
-                    onClick={() => setIsMenuOpen(false)}
-                    className={({ isActive }) =>
-                      `text-sm font-medium transition-colors duration-200 ${
-                        isActive
-                          ? "text-primary"
-                          : "text-gray-700 hover:text-primary"
-                      }`
-                    }
-                  >
-                    Register
-                  </NavLink>
-                </>
-              )}
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* mobile menu drawer */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-base-100 border-t border-base-200 p-4 space-y-2 animate-in fade-in slide-in-from-top-4">
+          {currentLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              onClick={() => setIsMenuOpen(false)}
+              className="block px-4 py-3 rounded-xl font-bold hover:bg-base-200"
+            >
+              {link.label}
+            </Link>
+          ))}
+
+          <div className="divider"></div>
+
+          {user ? (
+            <div className="space-y-2">
+              <Link
+                to="/dashboard"
+                onClick={() => setIsMenuOpen(false)}
+                className="btn btn-outline btn-primary w-full rounded-xl"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsMenuOpen(false);
+                }}
+                className="btn btn-error w-full text-white rounded-xl"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              <Link
+                to="/login"
+                onClick={() => setIsMenuOpen(false)}
+                className="btn btn-outline rounded-xl"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                onClick={() => setIsMenuOpen(false)}
+                className="btn btn-primary rounded-xl"
+              >
+                Register
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </nav>
   );
 };
